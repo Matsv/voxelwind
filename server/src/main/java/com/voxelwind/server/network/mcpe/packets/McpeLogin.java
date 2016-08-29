@@ -7,18 +7,19 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.PooledByteBufAllocator;
 import lombok.Data;
 
+import java.nio.ByteOrder;
 import java.util.zip.DataFormatException;
 
 @Data
 public class McpeLogin implements RakNetPackage {
-    private int protocolVersion; // = 82
+    private int protocolVersion; // = 90
     private String chainData;
     private String skinData;
 
     @Override
     public void decode(ByteBuf buffer) {
         protocolVersion = buffer.readInt();
-        int bodyLength = (buffer.readInt() & 0xFF); // TODO What's wrong with this?
+        buffer.skipBytes(2); // You can't trust this.
         ByteBuf body = buffer.slice();
 
         // Decompress the body
