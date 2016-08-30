@@ -23,7 +23,6 @@ import com.voxelwind.server.game.level.LevelManager;
 import com.voxelwind.server.game.level.VoxelwindLevel;
 import com.voxelwind.server.game.level.provider.FlatworldChunkProvider;
 import com.voxelwind.server.game.level.provider.MemoryLevelDataProvider;
-import com.voxelwind.server.jni.CryptoUtil;
 import com.voxelwind.server.network.Native;
 import com.voxelwind.server.network.NettyVoxelwindNetworkListener;
 import com.voxelwind.server.network.rcon.NettyVoxelwindRconListener;
@@ -67,14 +66,6 @@ public class VoxelwindServer implements Server {
         // Load native libraries early.
         boolean partiallySupportedLinux = Epoll.isAvailable();
         boolean fullySupportedLinux = Native.cipher.load();
-
-        // If JCE unlimited strength isn't available and native crypto doesn't work, the server will not work.
-        if (!(CryptoUtil.isJCEUnlimitedStrength() || Native.cipher.isLoaded())) {
-            LOGGER.fatal("Voxelwind requires either the unlimited-strength JCE policy installed or running on a native-code-capable Linux distribution.");
-            LOGGER.fatal("Visit https://wiki.voxelwind.com/faq for more information.");
-            LOGGER.fatal("The server will now shut down.");
-            return;
-        }
 
         if (partiallySupportedLinux) {
             Native.zlib.load();
