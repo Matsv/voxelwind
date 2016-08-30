@@ -242,7 +242,7 @@ public class McpeUtil {
         buf.writeLong(uuid.getLeastSignificantBits());
     }
 
-    public static int readVarInt(ByteBuf in) throws IOException {
+    public static int readVarInt(ByteBuf in) {
         int i = 0;
         int j = 0;
         while (true) {
@@ -254,7 +254,7 @@ public class McpeUtil {
         return i;
     }
 
-    public static void writeVarInt(ByteBuf out, int paramInt) throws IOException {
+    public static void writeVarInt(ByteBuf out, int paramInt) {
         while (true) {
             if ((paramInt & 0xFFFFFF80) == 0) {
                 out.writeByte(paramInt);
@@ -264,5 +264,15 @@ public class McpeUtil {
             out.writeByte(paramInt & 0x7F | 0x80);
             paramInt >>>= 7;
         }
+    }
+
+    public static String readVarIntString(ByteBuf buf) {
+        int length = readVarInt(buf);
+        return buf.readSlice(length).toString(StandardCharsets.UTF_8);
+    }
+
+    public static void writeVarIntString(ByteBuf buf, String string) {
+        writeVarInt(buf, string.length());
+        ByteBufUtil.writeUtf8(buf, string);
     }
 }
