@@ -78,9 +78,9 @@ public class PlayerSession extends LivingEntity implements Player, InventoryObse
             hasMoved = false;
             if (isTeleported()) {
                 sendMovePlayerPacket();
-                updateViewableEntities();
-                sendNewChunks();
             }
+            updateViewableEntities();
+            sendNewChunks();
         }
 
         return true;
