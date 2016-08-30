@@ -5,7 +5,7 @@ import com.voxelwind.server.VoxelwindServer;
 import com.voxelwind.server.network.PacketRegistry;
 import com.voxelwind.server.network.PacketType;
 import com.voxelwind.server.network.mcpe.packets.*;
-import com.voxelwind.server.network.raknet.RakNetPackage;
+import com.voxelwind.server.network.NetworkPackage;
 import com.voxelwind.server.network.raknet.RakNetSession;
 import com.voxelwind.server.network.raknet.datagrams.EncapsulatedRakNetPacket;
 import com.voxelwind.server.network.raknet.datastructs.IntRange;
@@ -65,7 +65,7 @@ public class RakNetDatagramHandler extends SimpleChannelInboundHandler<Addressed
                     if (possiblyReassembled.isPresent()) {
                         ByteBuf reassembled = possiblyReassembled.get();
                         try {
-                            RakNetPackage pkg = PacketRegistry.tryDecode(reassembled, PacketType.RAKNET);
+                            NetworkPackage pkg = PacketRegistry.tryDecode(reassembled, PacketType.RAKNET);
                             handlePackage(pkg, session);
                         } finally {
                             reassembled.release();
@@ -73,7 +73,7 @@ public class RakNetDatagramHandler extends SimpleChannelInboundHandler<Addressed
                     }
                 } else {
                     // Try to decode the full packet.
-                    RakNetPackage pkg = PacketRegistry.tryDecode(packet.getBuffer(), PacketType.RAKNET);
+                    NetworkPackage pkg = PacketRegistry.tryDecode(packet.getBuffer(), PacketType.RAKNET);
                     handlePackage(pkg, session);
                 }
             }
@@ -84,7 +84,7 @@ public class RakNetDatagramHandler extends SimpleChannelInboundHandler<Addressed
         }
     }
 
-    private void handlePackage(RakNetPackage netPackage, McpeSession session) throws Exception {
+    private void handlePackage(NetworkPackage netPackage, McpeSession session) throws Exception {
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("Inbound package: {}", netPackage);
         }
@@ -116,7 +116,7 @@ public class RakNetDatagramHandler extends SimpleChannelInboundHandler<Addressed
                     LOGGER.debug("[HEX IN] {}", ByteBufUtil.prettyHexDump(cleartext));
                 }
 
-                RakNetPackage pkg = PacketRegistry.tryDecode(cleartext, PacketType.MCPE);
+                NetworkPackage pkg = PacketRegistry.tryDecode(cleartext, PacketType.MCPE);
                 handlePackage(pkg, session);
             } finally {
                 if (cleartext != null && cleartext != ((McpeWrapper) netPackage).getWrapped()) {
@@ -167,7 +167,7 @@ public class RakNetDatagramHandler extends SimpleChannelInboundHandler<Addressed
 
         // McpeBatch: Multiple packets. This method will handle everything.
         if (netPackage instanceof McpeBatch) {
-            for (RakNetPackage aPackage : ((McpeBatch) netPackage).getPackages()) {
+            for (NetworkPackage aPackage : ((McpeBatch) netPackage).getPackages()) {
                 handlePackage(aPackage, session);
             }
             return;

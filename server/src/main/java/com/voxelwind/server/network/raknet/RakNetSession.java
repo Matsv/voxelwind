@@ -2,6 +2,7 @@ package com.voxelwind.server.network.raknet;
 
 import com.google.common.base.Preconditions;
 import com.voxelwind.server.VoxelwindServer;
+import com.voxelwind.server.network.NetworkPackage;
 import com.voxelwind.server.network.raknet.datagrams.EncapsulatedRakNetPacket;
 import com.voxelwind.server.network.raknet.datagrams.RakNetDatagram;
 import com.voxelwind.server.network.raknet.datastructs.IntRange;
@@ -21,7 +22,6 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 
 public class RakNetSession implements SessionConnection {
     private static final Logger LOGGER = LogManager.getLogger(RakNetSession.class);
@@ -123,7 +123,7 @@ public class RakNetSession implements SessionConnection {
         channel.flush();
     }
 
-    public void sendDirectPackage(RakNetPackage netPackage) {
+    public void sendDirectPackage(NetworkPackage netPackage) {
         checkForClosed();
         channel.writeAndFlush(new DirectAddressedRakNetPacket(netPackage, remoteAddress), channel.voidPromise());
     }

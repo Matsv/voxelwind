@@ -13,7 +13,7 @@ import com.voxelwind.server.network.mcpe.annotations.DisallowWrapping;
 import com.voxelwind.server.network.mcpe.annotations.ForceClearText;
 import com.voxelwind.server.network.mcpe.packets.McpeBatch;
 import com.voxelwind.server.network.mcpe.packets.McpeDisconnect;
-import com.voxelwind.server.network.raknet.RakNetPackage;
+import com.voxelwind.server.network.NetworkPackage;
 import com.voxelwind.server.network.session.auth.ClientData;
 import com.voxelwind.server.network.session.auth.UserAuthenticationProfile;
 import io.netty.buffer.ByteBuf;
@@ -36,7 +36,7 @@ public class McpeSession {
     private static final Logger LOGGER = LogManager.getLogger(McpeSession.class);
     private static final int TIMEOUT_MS = 30000;
     private final AtomicLong encryptedSentPacketGenerator = new AtomicLong();
-    private final Queue<RakNetPackage> currentlyQueued = new ConcurrentLinkedQueue<>();
+    private final Queue<NetworkPackage> currentlyQueued = new ConcurrentLinkedQueue<>();
     private UserAuthenticationProfile authenticationProfile;
     private ClientData clientData;
     private NetworkPacketHandler handler;
@@ -86,7 +86,7 @@ public class McpeSession {
         Preconditions.checkState(!connection.isClosed(), "Connection has been closed!");
     }
 
-    public void addToSendQueue(RakNetPackage netPackage) {
+    public void addToSendQueue(NetworkPackage netPackage) {
         checkForClosed();
         Preconditions.checkNotNull(netPackage, "netPackage");
 
@@ -96,13 +96,13 @@ public class McpeSession {
         currentlyQueued.add(netPackage);
     }
 
-    public void sendImmediatePackage(RakNetPackage netPackage) {
+    public void sendImmediatePackage(NetworkPackage netPackage) {
         checkForClosed();
         Preconditions.checkNotNull(netPackage, "netPackage");
         internalSendPackage(netPackage);
     }
 
-    private void internalSendPackage(RakNetPackage netPackage) {
+    private void internalSendPackage(NetworkPackage netPackage) {
         int id = PacketRegistry.getId(netPackage);
 
         ByteBuf encodedPacketData = PooledByteBufAllocator.DEFAULT.directBuffer();
@@ -158,7 +158,7 @@ public class McpeSession {
     }
 
     private void sendQueued() {
-        RakNetPackage netPackage;
+        NetworkPackage netPackage;
         McpeBatch batch = new McpeBatch();
         while ((netPackage = currentlyQueued.poll()) != null) {
             if (netPackage.getClass().isAnnotationPresent(BatchDisallowed.class) ||
