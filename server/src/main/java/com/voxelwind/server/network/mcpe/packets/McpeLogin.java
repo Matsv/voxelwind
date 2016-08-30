@@ -11,14 +11,14 @@ import java.util.zip.DataFormatException;
 
 @Data
 public class McpeLogin implements RakNetPackage {
-    private int protocolVersion; // = 82
+    private int protocolVersion; // = 90
     private String chainData;
     private String skinData;
 
     @Override
     public void decode(ByteBuf buffer) {
         protocolVersion = buffer.readInt();
-        int bodyLength = (buffer.readInt() & 0xFF); // TODO What's wrong with this?
+        buffer.skipBytes(protocolVersion >= 90 ? 2 : 4);
         ByteBuf body = buffer.slice();
 
         // Decompress the body
