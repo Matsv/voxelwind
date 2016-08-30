@@ -19,7 +19,7 @@ public class McpeLogin implements RakNetPackage {
     @Override
     public void decode(ByteBuf buffer) {
         protocolVersion = buffer.readInt();
-        buffer.skipBytes(2); // You can't trust this.
+        buffer.skipBytes(protocolVersion >= 90 ? 2 : 4); // You can't trust this.
         ByteBuf body = buffer.slice();
 
         // Decompress the body

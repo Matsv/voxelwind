@@ -1,4 +1,4 @@
-package com.voxelwind.server.network.handler;
+package com.voxelwind.server.network.raknet.handler;
 
 import com.google.common.net.InetAddresses;
 import com.voxelwind.server.VoxelwindServer;
@@ -6,6 +6,7 @@ import com.voxelwind.server.network.PacketRegistry;
 import com.voxelwind.server.network.PacketType;
 import com.voxelwind.server.network.mcpe.packets.*;
 import com.voxelwind.server.network.raknet.RakNetPackage;
+import com.voxelwind.server.network.raknet.RakNetSession;
 import com.voxelwind.server.network.raknet.datagrams.EncapsulatedRakNetPacket;
 import com.voxelwind.server.network.raknet.datastructs.IntRange;
 import com.voxelwind.server.network.raknet.enveloped.AddressedRakNetDatagram;
@@ -25,11 +26,11 @@ import java.net.InetSocketAddress;
 import java.util.Arrays;
 import java.util.Optional;
 
-public class VoxelwindDatagramHandler extends SimpleChannelInboundHandler<AddressedRakNetDatagram> {
-    private static final Logger LOGGER = LogManager.getLogger(VoxelwindDatagramHandler.class);
+public class RakNetDatagramHandler extends SimpleChannelInboundHandler<AddressedRakNetDatagram> {
+    private static final Logger LOGGER = LogManager.getLogger(RakNetDatagramHandler.class);
     private final VoxelwindServer server;
 
-    public VoxelwindDatagramHandler(VoxelwindServer server) {
+    public RakNetDatagramHandler(VoxelwindServer server) {
         this.server = server;
     }
 
@@ -39,6 +40,13 @@ public class VoxelwindDatagramHandler extends SimpleChannelInboundHandler<Addres
 
         if (session == null)
             return;
+
+        // Make sure a RakNet session is backing this packet.
+        if (!(session.getConnection() instanceof RakNetSession)) {
+            return;
+        }
+
+        RakNetSession rakNetSession = (RakNetSession) session.getConnection();
 
         // Acknowledge receipt of the datagram.
         AckPacket ackPacket = new AckPacket();
@@ -53,7 +61,7 @@ public class VoxelwindDatagramHandler extends SimpleChannelInboundHandler<Addres
             for (EncapsulatedRakNetPacket packet : datagram.content().getPackets()) {
                 // Try to figure out what packet got sent.
                 if (packet.isHasSplit()) {
-                    Optional<ByteBuf> possiblyReassembled = session.addSplitPacket(packet);
+                    Optional<ByteBuf> possiblyReassembled = rakNetSession.addSplitPacket(packet);
                     if (possiblyReassembled.isPresent()) {
                         ByteBuf reassembled = possiblyReassembled.get();
                         try {
@@ -98,6 +106,7 @@ public class VoxelwindDatagramHandler extends SimpleChannelInboundHandler<Addres
                 if (session.isEncrypted()) {
                     cleartext = PooledByteBufAllocator.DEFAULT.directBuffer();
                     session.getDecryptionCipher().cipher(((McpeWrapper) netPackage).getWrapped(), cleartext);
+                    LOGGER.debug("[CHECKSUM] {}", ByteBufUtil.hexDump(cleartext.slice(cleartext.readableBytes() - 8, 8)));
                     cleartext = cleartext.slice(0, cleartext.readableBytes() - 8);
                 } else {
                     cleartext = ((McpeWrapper) netPackage).getWrapped();
@@ -132,7 +141,7 @@ public class VoxelwindDatagramHandler extends SimpleChannelInboundHandler<Addres
             ConnectionResponsePacket response = new ConnectionResponsePacket();
             response.setIncomingTimestamp(request.getTimestamp());
             response.setSystemTimestamp(System.currentTimeMillis());
-            response.setSystemAddress(session.getRemoteAddress());
+            response.setSystemAddress(session.getRemoteAddress().orElse(new InetSocketAddress(InetAddress.getLoopbackAddress(), 19132)));
             InetSocketAddress[] addresses = new InetSocketAddress[10];
             Arrays.fill(addresses, new InetSocketAddress(InetAddresses.forString("255.255.255.255"), 19132));
             addresses[0] = new InetSocketAddress(InetAddress.getLoopbackAddress(), 19132);

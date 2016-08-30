@@ -23,7 +23,7 @@ import com.voxelwind.server.game.level.VoxelwindLevel;
 import com.voxelwind.server.game.level.chunk.VoxelwindChunk;
 import com.voxelwind.server.game.entities.*;
 import com.voxelwind.server.game.level.util.Attribute;
-import com.voxelwind.server.network.handler.NetworkPacketHandler;
+import com.voxelwind.server.network.raknet.handler.NetworkPacketHandler;
 import com.voxelwind.server.network.mcpe.packets.*;
 import com.voxelwind.api.util.Rotation;
 import org.apache.logging.log4j.LogManager;
@@ -112,9 +112,8 @@ public class PlayerSession extends LivingEntity implements Player, InventoryObse
         throw new UnsupportedOperationException("Do not use remove() on player sessions. Use disconnect() instead.");
     }
 
-    @Override
-    public boolean isRemoved() {
-        return session.isClosed();
+    void removeInternal() {
+        super.remove();
     }
 
     @Override
@@ -324,7 +323,7 @@ public class PlayerSession extends LivingEntity implements Player, InventoryObse
 
     @Nonnull
     @Override
-    public InetSocketAddress getRemoteAddress() {
+    public Optional<InetSocketAddress> getRemoteAddress() {
         return session.getRemoteAddress();
     }
 
