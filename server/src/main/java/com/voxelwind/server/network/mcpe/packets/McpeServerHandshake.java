@@ -1,5 +1,6 @@
 package com.voxelwind.server.network.mcpe.packets;
 
+import com.voxelwind.server.network.mcpe.McpeUtil;
 import com.voxelwind.server.network.mcpe.annotations.BatchDisallowed;
 import com.voxelwind.server.network.mcpe.annotations.ForceClearText;
 import com.voxelwind.server.network.NetworkPackage;
@@ -24,7 +25,7 @@ public class McpeServerHandshake implements NetworkPackage {
 
     @Override
     public void decode(ByteBuf buffer) {
-        String keyBase64 = RakNetUtil.readString(buffer);
+        String keyBase64 = McpeUtil.readVarIntString(buffer);
         byte[] keyArray = Base64.getDecoder().decode(keyBase64);
         try {
             key = KeyFactory.getInstance("EC", "BC").generatePublic(new X509EncodedKeySpec(keyArray));
@@ -39,7 +40,7 @@ public class McpeServerHandshake implements NetworkPackage {
     @Override
     public void encode(ByteBuf buffer) {
         byte[] encoded = key.getEncoded();
-        RakNetUtil.writeString(buffer, Base64.getEncoder().encodeToString(encoded));
+        McpeUtil.writeVarIntString(buffer, Base64.getEncoder().encodeToString(encoded));
         buffer.writeShort(token.length);
         buffer.writeBytes(token);
     }

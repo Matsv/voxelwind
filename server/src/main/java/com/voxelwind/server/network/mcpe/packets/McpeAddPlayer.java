@@ -28,7 +28,7 @@ public class McpeAddPlayer implements NetworkPackage {
     @Override
     public void decode(ByteBuf buffer) {
         uuid = McpeUtil.readUuid(buffer);
-        username = RakNetUtil.readString(buffer);
+        username = McpeUtil.readVarIntString(buffer);
         entityId = buffer.readLong();
         position = McpeUtil.readVector3f(buffer);
         velocity = McpeUtil.readVector3f(buffer);
@@ -41,7 +41,7 @@ public class McpeAddPlayer implements NetworkPackage {
     @Override
     public void encode(ByteBuf buffer) {
         McpeUtil.writeUuid(buffer, uuid);
-        RakNetUtil.writeString(buffer, username);
+        McpeUtil.writeVarIntString(buffer, username);
         buffer.writeLong(entityId);
         McpeUtil.writeVector3f(buffer, position);
         McpeUtil.writeVector3f(buffer, velocity);

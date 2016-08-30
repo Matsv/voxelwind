@@ -19,24 +19,24 @@ public class McpeText implements NetworkPackage {
         type = TextType.values()[buffer.readByte()];
         switch (type) {
             case RAW:
-                message = RakNetUtil.readString(buffer);
+                message = McpeUtil.readVarIntString(buffer);
                 break;
             case SOURCE:
-                source = RakNetUtil.readString(buffer);
-                message = RakNetUtil.readString(buffer);
+                source = McpeUtil.readVarIntString(buffer);
+                message = McpeUtil.readVarIntString(buffer);
                 break;
             case TRANSLATE:
                 translatedMessage = McpeUtil.readTranslatedMessage(buffer);
                 break;
             case POPUP:
-                source = RakNetUtil.readString(buffer);
-                message = RakNetUtil.readString(buffer);
+                source = McpeUtil.readVarIntString(buffer);
+                message = McpeUtil.readVarIntString(buffer);
                 break;
             case TIP:
-                message = RakNetUtil.readString(buffer);
+                message = McpeUtil.readVarIntString(buffer);
                 break;
             case SYSTEM:
-                message = RakNetUtil.readString(buffer);
+                message = McpeUtil.readVarIntString(buffer);
                 break;
         }
     }
@@ -46,24 +46,24 @@ public class McpeText implements NetworkPackage {
         buffer.writeByte(type.ordinal());
         switch (type) {
             case RAW:
-                RakNetUtil.writeString(buffer, message);
+                McpeUtil.writeVarIntString(buffer, message);
                 break;
             case SOURCE:
-                RakNetUtil.writeString(buffer, source);
-                RakNetUtil.writeString(buffer, message);
+                McpeUtil.writeVarIntString(buffer, source);
+                McpeUtil.writeVarIntString(buffer, message);
                 break;
             case TRANSLATE:
                 McpeUtil.writeTranslatedMessage(buffer, translatedMessage);
                 break;
             case POPUP:
-                RakNetUtil.writeString(buffer, source);
-                RakNetUtil.writeString(buffer, message);
+                McpeUtil.writeVarIntString(buffer, source);
+                McpeUtil.writeVarIntString(buffer, message);
                 break;
             case TIP:
-                message = RakNetUtil.readString(buffer);
+                message = McpeUtil.readVarIntString(buffer);
                 break;
             case SYSTEM:
-                message = RakNetUtil.readString(buffer);
+                message = McpeUtil.readVarIntString(buffer);
                 break;
         }
     }

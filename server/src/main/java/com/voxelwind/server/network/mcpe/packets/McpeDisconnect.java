@@ -1,6 +1,7 @@
 package com.voxelwind.server.network.mcpe.packets;
 
 import com.voxelwind.server.network.NetworkPackage;
+import com.voxelwind.server.network.mcpe.McpeUtil;
 import com.voxelwind.server.network.raknet.RakNetUtil;
 import io.netty.buffer.ByteBuf;
 import lombok.Data;
@@ -11,11 +12,11 @@ public class McpeDisconnect implements NetworkPackage {
 
     @Override
     public void decode(ByteBuf buffer) {
-        message = RakNetUtil.readString(buffer);
+        message = McpeUtil.readVarIntString(buffer);
     }
 
     @Override
     public void encode(ByteBuf buffer) {
-        RakNetUtil.writeString(buffer, message);
+        McpeUtil.writeVarIntString(buffer, message);
     }
 }
