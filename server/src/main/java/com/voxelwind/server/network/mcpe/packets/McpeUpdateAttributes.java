@@ -16,13 +16,13 @@ public class McpeUpdateAttributes implements NetworkPackage {
 
     @Override
     public void decode(ByteBuf buffer) {
-        entityId = buffer.readLong();
+        entityId = McpeUtil.readVarInt(buffer);
         attributes.addAll(McpeUtil.readAttributes(buffer));
     }
 
     @Override
     public void encode(ByteBuf buffer) {
-        buffer.writeLong(entityId);
+        McpeUtil.writeVarInt(buffer, (int) entityId);
         McpeUtil.writeAttributes(buffer, attributes);
     }
 }

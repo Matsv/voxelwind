@@ -187,8 +187,7 @@ public class PlayerSession extends LivingEntity implements Player, InventoryObse
         startGame.setGenerator(1);
         startGame.setGamemode(gameMode.ordinal());
         startGame.setEntityId(getEntityId());
-        startGame.setSpawnLocation(getPosition().toInt());
-        startGame.setPosition(getGamePosition());
+        startGame.setSpawnLocation(getPosition());
         session.addToSendQueue(startGame);
 
         McpeAdventureSettings settings = new McpeAdventureSettings();
@@ -196,7 +195,7 @@ public class PlayerSession extends LivingEntity implements Player, InventoryObse
         session.addToSendQueue(settings);
 
         McpeSetSpawnPosition spawnPosition = new McpeSetSpawnPosition();
-        spawnPosition.setPosition(getLevel().getSpawnLocation().toInt());
+        spawnPosition.setPosition(getLevel().getSpawnLocation());
         session.addToSendQueue(spawnPosition);
 
         sendMovePlayerPacket();

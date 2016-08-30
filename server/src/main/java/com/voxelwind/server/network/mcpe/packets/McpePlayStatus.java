@@ -1,6 +1,7 @@
 package com.voxelwind.server.network.mcpe.packets;
 
 import com.voxelwind.server.network.NetworkPackage;
+import com.voxelwind.server.network.mcpe.McpeUtil;
 import io.netty.buffer.ByteBuf;
 import lombok.Data;
 
@@ -10,12 +11,12 @@ public class McpePlayStatus implements NetworkPackage {
 
     @Override
     public void decode(ByteBuf buffer) {
-        status = Status.values()[buffer.readInt()];
+        status = Status.values()[McpeUtil.readVarInt(buffer)];
     }
 
     @Override
     public void encode(ByteBuf buffer) {
-        buffer.writeInt(status.ordinal());
+        McpeUtil.writeVarInt(buffer, status.ordinal());
     }
 
     public enum Status {

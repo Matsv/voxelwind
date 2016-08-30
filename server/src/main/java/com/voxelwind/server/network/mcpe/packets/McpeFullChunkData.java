@@ -1,6 +1,7 @@
 package com.voxelwind.server.network.mcpe.packets;
 
 import com.voxelwind.server.network.NetworkPackage;
+import com.voxelwind.server.network.mcpe.McpeUtil;
 import io.netty.buffer.ByteBuf;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -17,20 +18,20 @@ public class McpeFullChunkData implements NetworkPackage {
 
     @Override
     public void decode(ByteBuf buffer) {
-        chunkX = buffer.readInt();
-        chunkZ = buffer.readInt();
+        chunkX = McpeUtil.readVarInt(buffer);
+        chunkZ = McpeUtil.readVarInt(buffer);
         order = buffer.readByte();
-        int length = buffer.readInt();
+        int length = McpeUtil.readVarInt(buffer);
         data = new byte[length];
         buffer.readBytes(data);
     }
 
     @Override
     public void encode(ByteBuf buffer) {
-        buffer.writeInt(chunkX);
-        buffer.writeInt(chunkZ);
+        McpeUtil.writeVarInt(buffer, chunkX);
+        McpeUtil.writeVarInt(buffer, chunkZ);
         buffer.writeByte(order);
-        buffer.writeInt(data.length);
+        McpeUtil.writeVarInt(buffer, data.length);
         buffer.writeBytes(data);
     }
 }

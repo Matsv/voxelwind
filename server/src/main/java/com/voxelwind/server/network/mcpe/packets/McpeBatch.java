@@ -2,6 +2,7 @@ package com.voxelwind.server.network.mcpe.packets;
 
 import com.voxelwind.server.network.PacketRegistry;
 import com.voxelwind.server.network.PacketType;
+import com.voxelwind.server.network.mcpe.McpeUtil;
 import com.voxelwind.server.network.mcpe.annotations.BatchDisallowed;
 import com.voxelwind.server.network.NetworkPackage;
 import com.voxelwind.server.network.util.CompressionUtil;
@@ -21,7 +22,7 @@ public class McpeBatch implements NetworkPackage {
     public void decode(ByteBuf buffer) {
         ByteBuf decompressed = null;
         try {
-            int compressedSize = buffer.readInt();
+            int compressedSize = McpeUtil.readVarInt(buffer);
             decompressed = CompressionUtil.inflate(buffer.readSlice(compressedSize));
 
             // Now process the decompressed result.
@@ -79,16 +80,11 @@ public class McpeBatch implements NetworkPackage {
                 encodedPackage.release();
             }
 
-            // Write a temporary size here. We'll replace it later.
-            int lengthPosition = buffer.writerIndex();
-            buffer.writeInt(0);
-
-            // Compress the buffer
-            int afterLength = buffer.writerIndex();
-            CompressionUtil.deflate(source, buffer);
-
-            // Replace the dummy length we wrote
-            buffer.setInt(lengthPosition, buffer.writerIndex() - afterLength);
+            // Use temporary buffer to compress everything (needed for varints)
+            ByteBuf out = CompressionUtil.deflate(source);
+            McpeUtil.writeVarInt(buffer, out.readableBytes());
+            buffer.writeBytes(out);
+            out.release();
         } catch (DataFormatException e) {
             throw new RuntimeException("Unable to deflate batch data", e);
         } finally {

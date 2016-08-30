@@ -1,6 +1,7 @@
 package com.voxelwind.server.network.mcpe.packets;
 
 import com.voxelwind.server.network.NetworkPackage;
+import com.voxelwind.server.network.mcpe.McpeUtil;
 import io.netty.buffer.ByteBuf;
 import lombok.Data;
 
@@ -11,13 +12,13 @@ public class McpeSetTime implements NetworkPackage {
 
     @Override
     public void decode(ByteBuf buffer) {
-        time = buffer.readLong();
+        time = McpeUtil.readVarInt(buffer);
         running = buffer.readBoolean();
     }
 
     @Override
     public void encode(ByteBuf buffer) {
-        buffer.writeLong(time);
+        McpeUtil.writeVarInt(buffer, (int) time);
         buffer.writeBoolean(running);
     }
 }

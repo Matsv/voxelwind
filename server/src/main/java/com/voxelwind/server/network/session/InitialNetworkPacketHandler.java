@@ -57,6 +57,12 @@ public class InitialNetworkPacketHandler implements NetworkPacketHandler {
 
     @Override
     public void handle(McpeLogin packet) {
+        // Early check: if session is not the proper protocol version, stop here.
+        if (packet.getProtocolVersion() != 90) {
+            session.disconnect("You need to upgrade to MCPE 0.16.");
+            return;
+        }
+
         JsonNode certData;
         try {
             certData = VoxelwindServer.MAPPER.readTree(packet.getChainData());

@@ -23,7 +23,7 @@ public class McpeContainerSetContents implements NetworkPackage {
         int hotbarEntriesToRead = buffer.readShort();
         hotbarData = new int[hotbarEntriesToRead];
         for (int i = 0; i < hotbarEntriesToRead; i++) {
-            hotbarData[i] = buffer.readInt();
+            hotbarData[i] = McpeUtil.readVarInt(buffer);
         }
     }
 
@@ -36,7 +36,7 @@ public class McpeContainerSetContents implements NetworkPackage {
         }
         buffer.writeShort(hotbarData.length);
         for (int i : hotbarData) {
-            buffer.writeInt(i);
+            McpeUtil.writeVarInt(buffer, i);
         }
     }
 }

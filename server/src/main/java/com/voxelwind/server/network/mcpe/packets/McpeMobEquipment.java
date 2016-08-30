@@ -15,7 +15,7 @@ public class McpeMobEquipment implements NetworkPackage {
 
     @Override
     public void decode(ByteBuf buffer) {
-        entityId = buffer.readLong();
+        entityId = McpeUtil.readVarInt(buffer);
         stack = McpeUtil.readItemStack(buffer);
         inventorySlot = buffer.readByte();
         hotbarSlot = buffer.readByte();
@@ -25,7 +25,7 @@ public class McpeMobEquipment implements NetworkPackage {
     public void encode(ByteBuf buffer) {
         buffer.writeLong(entityId);
         McpeUtil.writeItemStack(buffer, stack);
-        buffer.writeInt(inventorySlot);
-        buffer.writeInt(hotbarSlot);
+        McpeUtil.writeVarInt(buffer, inventorySlot);
+        McpeUtil.writeVarInt(buffer, hotbarSlot);
     }
 }

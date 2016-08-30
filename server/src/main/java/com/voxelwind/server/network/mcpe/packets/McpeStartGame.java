@@ -17,30 +17,28 @@ public class McpeStartGame implements NetworkPackage {
     private int generator;
     private int gamemode;
     private long entityId;
-    private Vector3i spawnLocation;
-    private Vector3f position;
+    private Vector3f spawnLocation;
 
     @Override
     public void decode(ByteBuf buffer) {
-        seed = buffer.readInt();
-        dimension = buffer.readByte();
-        generator = buffer.readInt();
-        gamemode = buffer.readInt();
-        entityId = buffer.readLong();
-        spawnLocation = McpeUtil.readVector3i(buffer);
-        position = McpeUtil.readVector3f(buffer);
-        buffer.skipBytes(UNKNOWN.length);
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void encode(ByteBuf buffer) {
-        buffer.writeInt(seed);
+        McpeUtil.writeVarInt(buffer, 0); //EntityUniqueID
+        McpeUtil.writeVarInt(buffer, (int) entityId); //EntityRuntimeID (basically just the normal entityID)
+        McpeUtil.writeVector3f(buffer, spawnLocation);
+        McpeUtil.writeVarInt(buffer, seed);
         buffer.writeByte(dimension);
-        buffer.writeInt(generator);
-        buffer.writeInt(gamemode);
-        buffer.writeLong(entityId);
-        McpeUtil.writeVector3i(buffer, spawnLocation, false);
-        McpeUtil.writeVector3f(buffer, position);
+        buffer.writeByte(generator);
+        buffer.writeByte(gamemode);
+        buffer.writeByte(0); //Difficulty (TODO)
+        buffer.writeByte(0); //has been loaded in creative
+        buffer.writeByte(0); //edu mode
+        buffer.writeByte(0); //rain level
+        buffer.writeByte(0); //lightning level
+        buffer.writeByte(0); //commands enabled
         buffer.writeBytes(UNKNOWN);
     }
 }

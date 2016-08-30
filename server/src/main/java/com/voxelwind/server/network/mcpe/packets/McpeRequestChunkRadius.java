@@ -1,6 +1,7 @@
 package com.voxelwind.server.network.mcpe.packets;
 
 import com.voxelwind.server.network.NetworkPackage;
+import com.voxelwind.server.network.mcpe.McpeUtil;
 import io.netty.buffer.ByteBuf;
 import lombok.Data;
 
@@ -10,11 +11,11 @@ public class McpeRequestChunkRadius implements NetworkPackage {
 
     @Override
     public void decode(ByteBuf buffer) {
-        radius = buffer.readInt();
+        radius = McpeUtil.readVarInt(buffer);
     }
 
     @Override
     public void encode(ByteBuf buffer) {
-        buffer.writeInt(radius);
+        McpeUtil.writeVarInt(buffer, radius);
     }
 }

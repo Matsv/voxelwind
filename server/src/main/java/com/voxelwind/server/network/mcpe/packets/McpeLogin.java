@@ -39,6 +39,7 @@ public class McpeLogin implements NetworkPackage {
     @Override
     public void encode(ByteBuf buffer) {
         buffer.writeInt(protocolVersion);
+        buffer.writeShort(0); // TODO
 
         ByteBuf body = PooledByteBufAllocator.DEFAULT.directBuffer();
         try {
@@ -47,7 +48,7 @@ public class McpeLogin implements NetworkPackage {
 
             ByteBuf compressed = CompressionUtil.deflate(body);
 
-            buffer.writeInt(compressed.readableBytes() & 0xFF);
+            McpeUtil.writeVarInt(buffer, (compressed.readableBytes() & 0xFF));
             buffer.writeBytes(compressed);
         } catch (DataFormatException e) {
             throw new RuntimeException("Unable to compress login data body", e);
