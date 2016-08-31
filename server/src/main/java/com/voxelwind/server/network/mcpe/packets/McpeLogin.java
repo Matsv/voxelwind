@@ -50,6 +50,7 @@ public class McpeLogin implements NetworkPackage {
 
             McpeUtil.writeVarInt(buffer, (compressed.readableBytes() & 0xFF));
             buffer.writeBytes(compressed);
+            compressed.release();
         } catch (DataFormatException e) {
             throw new RuntimeException("Unable to compress login data body", e);
         } finally {

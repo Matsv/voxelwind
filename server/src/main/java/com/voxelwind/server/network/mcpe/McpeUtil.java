@@ -96,7 +96,6 @@ public class McpeUtil {
     }
 
     public static Collection<Attribute> readAttributes(ByteBuf buf) {
-        // TODO: Unsigned varints
         List<Attribute> attributes = new ArrayList<>();
         int size = readVarInt(buf);
 
@@ -113,7 +112,6 @@ public class McpeUtil {
     }
 
     public static void writeAttributes(ByteBuf buf, Collection<Attribute> attributeList) {
-        // TODO: Unsigned varints
         McpeUtil.writeVarInt(buf, attributeList.size());
         for (Attribute attribute : attributeList) {
             buf.writeFloat(attribute.getMinimumValue());
@@ -144,20 +142,20 @@ public class McpeUtil {
     }
 
     public static TranslatedMessage readTranslatedMessage(ByteBuf buf) {
-        String message = RakNetUtil.readString(buf);
-        int ln = buf.readByte();
+        String message = readVarIntString(buf);
+        int ln = readVarInt(buf);
         List<String> replacements = new ArrayList<>();
         for (int i = 0; i < ln; i++) {
-            replacements.add(RakNetUtil.readString(buf));
+            replacements.add(readVarIntString(buf));
         }
         return new TranslatedMessage(message, replacements);
     }
 
     public static void writeTranslatedMessage(ByteBuf buf, TranslatedMessage message) {
-        RakNetUtil.writeString(buf, message.getName());
-        buf.writeByte(message.getReplacements().size());
+        writeVarIntString(buf, message.getName());
+        writeVarInt(buf, message.getReplacements().size());
         for (String s : message.getReplacements()) {
-            RakNetUtil.writeString(buf, s);
+            writeVarIntString(buf, s);
         }
     }
 
