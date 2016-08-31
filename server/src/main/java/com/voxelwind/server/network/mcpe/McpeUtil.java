@@ -20,6 +20,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufInputStream;
 import io.netty.buffer.ByteBufOutputStream;
 import io.netty.buffer.ByteBufUtil;
+import org.apache.commons.io.output.ByteArrayOutputStream;
 
 import java.io.IOException;
 import java.nio.ByteOrder;
@@ -95,6 +96,7 @@ public class McpeUtil {
     }
 
     public static Collection<Attribute> readAttributes(ByteBuf buf) {
+        // TODO: Unsigned varints
         List<Attribute> attributes = new ArrayList<>();
         int size = readVarInt(buf);
 
@@ -111,6 +113,7 @@ public class McpeUtil {
     }
 
     public static void writeAttributes(ByteBuf buf, Collection<Attribute> attributeList) {
+        // TODO: Unsigned varints
         McpeUtil.writeVarInt(buf, attributeList.size());
         for (Attribute attribute : attributeList) {
             buf.writeFloat(attribute.getMinimumValue());
@@ -167,7 +170,7 @@ public class McpeUtil {
         int count = buf.readByte();
         short damage = buf.readShort();
 
-        short nbtSize = buf.readShort();
+        int nbtSize = readVarInt(buf);
 
         ItemType type = ItemTypes.forId(id);
         VoxelwindItemStack stack = new VoxelwindItemStack(type, count, type.createDataFor(damage).orElse(null));
@@ -196,20 +199,25 @@ public class McpeUtil {
             buf.writeShort(0);
         }
 
-        // Remember this position, since we'll be writing the true NBT size here later:
-        int sizeIndex = buf.writerIndex();
-        buf.writeShort(0);
-
+        // Write a stack here
         if (stack instanceof VoxelwindItemStack) {
-            try (NBTOutputStream stream = new NBTOutputStream(new ByteBufOutputStream(buf), false, ByteOrder.LITTLE_ENDIAN)) {
+            ByteArrayOutputStream nbtBuffer = new ByteArrayOutputStream();
+            try (NBTOutputStream stream = new NBTOutputStream(nbtBuffer, false, ByteOrder.LITTLE_ENDIAN)) {
                 ((VoxelwindItemStack) stack).writeNbt(stream);
             } catch (IOException e) {
                 // This shouldn't happen (as this is backed by a Netty ByteBuf), but okay...
                 throw new IllegalStateException("Unable to save NBT data", e);
             }
 
-            // Set to the written NBT size
-            buf.setShort(sizeIndex, buf.writerIndex() - sizeIndex);
+            // Write NBT size.
+            writeVarInt(buf, nbtBuffer.size());
+            try {
+                nbtBuffer.writeTo(new ByteBufOutputStream(buf));
+            } catch (IOException e) {
+                throw new AssertionError(e); // Can't ever happen
+            }
+        } else {
+            writeVarInt(buf, 0);
         }
     }
 
