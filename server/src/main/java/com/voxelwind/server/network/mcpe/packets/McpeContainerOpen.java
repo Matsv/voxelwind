@@ -10,22 +10,22 @@ import lombok.Data;
 public class McpeContainerOpen implements NetworkPackage {
     private byte windowId;
     private byte type;
-    private short slotCount;
+    private int slotCount;
     private Vector3i position;
 
     @Override
     public void decode(ByteBuf buffer) {
         windowId = buffer.readByte();
         type = buffer.readByte();
-        slotCount = buffer.readShort();
-        position = McpeUtil.readVector3i(buffer, false);
+        slotCount = McpeUtil.readVarInt(buffer);
+        position = McpeUtil.readVector3i(buffer);
     }
 
     @Override
     public void encode(ByteBuf buffer) {
         buffer.writeByte(windowId);
         buffer.writeByte(type);
-        buffer.writeShort(slotCount);
-        McpeUtil.writeVector3i(buffer, position, false);
+        McpeUtil.writeVarInt(buffer, slotCount);
+        McpeUtil.writeVector3i(buffer, position);
     }
 }

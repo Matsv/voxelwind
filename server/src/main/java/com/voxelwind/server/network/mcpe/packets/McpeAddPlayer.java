@@ -29,7 +29,7 @@ public class McpeAddPlayer implements NetworkPackage {
     public void decode(ByteBuf buffer) {
         uuid = McpeUtil.readUuid(buffer);
         username = McpeUtil.readVarIntString(buffer);
-        entityId = buffer.readLong();
+        entityId = McpeUtil.readVarInt(buffer);
         position = McpeUtil.readVector3f(buffer);
         velocity = McpeUtil.readVector3f(buffer);
         yaw = buffer.readFloat();
@@ -42,7 +42,7 @@ public class McpeAddPlayer implements NetworkPackage {
     public void encode(ByteBuf buffer) {
         McpeUtil.writeUuid(buffer, uuid);
         McpeUtil.writeVarIntString(buffer, username);
-        buffer.writeLong(entityId);
+        McpeUtil.writeVarInt(buffer, (int) entityId);
         McpeUtil.writeVector3f(buffer, position);
         McpeUtil.writeVector3f(buffer, velocity);
         buffer.writeFloat(yaw);

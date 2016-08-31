@@ -70,7 +70,7 @@ public final class MetadataDictionary {
                     dictionary.put(idx, RakNetUtil.readString(buf));
                     break;
                 case EntityMetadataConstants.DATA_TYPE_POS:
-                    dictionary.put(idx, McpeUtil.readVector3i(buf, false));
+                    dictionary.put(idx, McpeUtil.readVector3i(buf));
                     break;
                 case EntityMetadataConstants.DATA_TYPE_SLOT:
                     short id = buf.readShort();
@@ -126,7 +126,7 @@ public final class MetadataDictionary {
         } else if (o instanceof Vector3i) {
             Vector3i vector3i = (Vector3i) o;
             buf.writeByte(EntityMetadataConstants.idify(EntityMetadataConstants.DATA_TYPE_POS, idx));
-            McpeUtil.writeVector3i(buf, vector3i, false);
+            McpeUtil.writeVector3i(buf, vector3i);
         } else {
             throw new IllegalArgumentException("Unsupported type " + o.getClass().getName());
         }

@@ -15,11 +15,13 @@ public class McpeContainerSetContents implements NetworkPackage {
     @Override
     public void decode(ByteBuf buffer) {
         windowId = buffer.readByte();
+        // TODO: Unsigned varint
         int stacksToRead = buffer.readShort();
         stacks = new ItemStack[stacksToRead];
         for (int i = 0; i < stacksToRead; i++) {
             stacks[i] = McpeUtil.readItemStack(buffer);
         }
+        // TODO: Unsigned varint
         int hotbarEntriesToRead = buffer.readShort();
         hotbarData = new int[hotbarEntriesToRead];
         for (int i = 0; i < hotbarEntriesToRead; i++) {
@@ -30,10 +32,12 @@ public class McpeContainerSetContents implements NetworkPackage {
     @Override
     public void encode(ByteBuf buffer) {
         buffer.writeByte(windowId);
+        // TODO: Unsigned varint
         buffer.writeShort(stacks.length);
         for (ItemStack stack : stacks) {
             McpeUtil.writeItemStack(buffer, stack);
         }
+        // TODO: Unsigned varint
         buffer.writeShort(hotbarData.length);
         for (int i : hotbarData) {
             McpeUtil.writeVarInt(buffer, i);
