@@ -96,13 +96,13 @@ public class McpeUtil {
 
     public static Collection<Attribute> readAttributes(ByteBuf buf) {
         List<Attribute> attributes = new ArrayList<>();
-        short size = buf.readShort();
+        int size = readVarInt(buf);
 
         for (int i = 0; i < size; i++) {
             float min = buf.readFloat();
             float max = buf.readFloat();
             float val = buf.readFloat();
-            String name = RakNetUtil.readString(buf);
+            String name = readVarIntString(buf);
 
             attributes.add(new Attribute(name, min, max, val));
         }
@@ -111,12 +111,12 @@ public class McpeUtil {
     }
 
     public static void writeAttributes(ByteBuf buf, Collection<Attribute> attributeList) {
-        buf.writeShort(attributeList.size());
+        McpeUtil.writeVarInt(buf, attributeList.size());
         for (Attribute attribute : attributeList) {
             buf.writeFloat(attribute.getMinimumValue());
             buf.writeFloat(attribute.getMaximumValue());
             buf.writeFloat(attribute.getValue());
-            RakNetUtil.writeString(buf, attribute.getName());
+            writeVarIntString(buf, attribute.getName());
         }
     }
 

@@ -11,13 +11,18 @@ import javax.xml.bind.DatatypeConverter;
 
 @Data
 public class McpeStartGame implements NetworkPackage {
-    private static final byte[] UNKNOWN = DatatypeConverter.parseHexBinary("01010000000000000000000000");
     private int seed;
     private byte dimension;
     private int generator;
     private int gamemode;
     private long entityId;
     private Vector3f spawnLocation;
+    private boolean inCreative;
+    private boolean isEduMode;
+    private float rainLevel = 0;
+    private float lightningLevel = 0;
+    private boolean commandsEnabled = false;
+    private byte difficulty;
 
     @Override
     public void decode(ByteBuf buffer) {
@@ -26,19 +31,19 @@ public class McpeStartGame implements NetworkPackage {
 
     @Override
     public void encode(ByteBuf buffer) {
-        McpeUtil.writeVarInt(buffer, 0); //EntityUniqueID
-        McpeUtil.writeVarInt(buffer, (int) entityId); //EntityRuntimeID (basically just the normal entityID)
+        McpeUtil.writeVarInt(buffer, (int) entityId); //EntityUniqueID
+        McpeUtil.writeVarInt(buffer, 0); //EntityRuntimeID
         McpeUtil.writeVector3f(buffer, spawnLocation);
         McpeUtil.writeVarInt(buffer, seed);
         buffer.writeByte(dimension);
         buffer.writeByte(generator);
         buffer.writeByte(gamemode);
-        buffer.writeByte(0); //Difficulty (TODO)
-        buffer.writeByte(0); //has been loaded in creative
-        buffer.writeByte(0); //edu mode
-        buffer.writeByte(0); //rain level
-        buffer.writeByte(0); //lightning level
-        buffer.writeByte(0); //commands enabled
-        buffer.writeBytes(UNKNOWN);
+        buffer.writeByte(difficulty); //Difficulty (TODO)
+        buffer.writeBoolean(inCreative); //has been loaded in creative
+        buffer.writeBoolean(isEduMode); //edu mode
+        buffer.writeFloat(rainLevel); //rain level
+        buffer.writeFloat(lightningLevel); //lightning level
+        buffer.writeBoolean(commandsEnabled); //commands enabled
+        McpeUtil.writeVarIntString(buffer, "");
     }
 }
