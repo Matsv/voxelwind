@@ -7,8 +7,6 @@ import com.voxelwind.server.network.NetworkPackage;
 import io.netty.buffer.ByteBuf;
 import lombok.Data;
 
-import javax.xml.bind.DatatypeConverter;
-
 @Data
 public class McpeStartGame implements NetworkPackage {
     private int seed;
@@ -16,6 +14,7 @@ public class McpeStartGame implements NetworkPackage {
     private int generator;
     private int gamemode;
     private long entityId;
+    private Vector3i levelSpawnLocation;
     private Vector3f spawnLocation;
     private boolean inCreative;
     private boolean isEduMode;
@@ -32,18 +31,20 @@ public class McpeStartGame implements NetworkPackage {
     @Override
     public void encode(ByteBuf buffer) {
         McpeUtil.writeVarInt(buffer, (int) entityId); //EntityUniqueID
-        McpeUtil.writeVarInt(buffer, 0); //EntityRuntimeID
+        McpeUtil.writeVarInt(buffer, (int) entityId); //EntityRuntimeID
         McpeUtil.writeVector3f(buffer, spawnLocation);
+        McpeUtil.writeVector3i(buffer, levelSpawnLocation);
         McpeUtil.writeVarInt(buffer, seed);
-        buffer.writeByte(dimension);
-        buffer.writeByte(generator);
-        buffer.writeByte(gamemode);
-        buffer.writeByte(difficulty); //Difficulty (TODO)
+        McpeUtil.writeVarInt(buffer, dimension);
+        McpeUtil.writeVarInt(buffer, generator);
+        McpeUtil.writeVarInt(buffer, gamemode);
+        McpeUtil.writeVarInt(buffer, difficulty); //Difficulty
         buffer.writeBoolean(inCreative); //has been loaded in creative
+        McpeUtil.writeVarInt(buffer, -1); //dayCycleStopTime
         buffer.writeBoolean(isEduMode); //edu mode
         buffer.writeFloat(rainLevel); //rain level
         buffer.writeFloat(lightningLevel); //lightning level
         buffer.writeBoolean(commandsEnabled); //commands enabled
-        McpeUtil.writeVarIntString(buffer, "");
+        McpeUtil.writeVarIntString(buffer, "UNKNOWN");
     }
 }

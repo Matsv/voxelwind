@@ -187,6 +187,7 @@ public class PlayerSession extends LivingEntity implements Player, InventoryObse
         startGame.setGenerator(1);
         startGame.setGamemode(gameMode.ordinal());
         startGame.setEntityId(getEntityId());
+        startGame.setLevelSpawnLocation(getLevel().getSpawnLocation().toInt());
         startGame.setSpawnLocation(getPosition());
         session.addToSendQueue(startGame);
 
