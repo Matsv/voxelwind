@@ -11,11 +11,11 @@ public class McpeRequestChunkRadius implements NetworkPackage {
 
     @Override
     public void decode(ByteBuf buffer) {
-        radius = McpeUtil.readUnsignedVarInt(buffer);
+        radius = McpeUtil.readSignedVarInt(buffer);
     }
 
     @Override
     public void encode(ByteBuf buffer) {
-        McpeUtil.writeUnsignedVarInt(buffer, radius);
+        McpeUtil.writeSignedVarInt(buffer, radius);
     }
 }
