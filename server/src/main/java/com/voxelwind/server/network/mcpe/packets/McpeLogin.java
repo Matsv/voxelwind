@@ -48,7 +48,7 @@ public class McpeLogin implements NetworkPackage {
 
             ByteBuf compressed = CompressionUtil.deflate(body);
 
-            McpeUtil.writeVarInt(buffer, (compressed.readableBytes() & 0xFF));
+            McpeUtil.writeUnsignedVarInt(buffer, (compressed.readableBytes() & 0xFF));
             buffer.writeBytes(compressed);
             compressed.release();
         } catch (DataFormatException e) {

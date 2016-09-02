@@ -16,7 +16,7 @@ public class McpeSetEntityMotion implements NetworkPackage {
     @Override
     public void decode(ByteBuf buffer) {
         while (buffer.isReadable()) {
-            long entityId = McpeUtil.readVarInt(buffer);
+            long entityId = McpeUtil.readUnsignedVarInt(buffer);
             Vector3f motion = McpeUtil.readVector3f(buffer);
             motionList.add(new EntityMotion(entityId, motion));
         }
@@ -25,7 +25,7 @@ public class McpeSetEntityMotion implements NetworkPackage {
     @Override
     public void encode(ByteBuf buffer) {
         for (EntityMotion motion : motionList) {
-            McpeUtil.writeVarInt(buffer, (int) motion.entityId);
+            McpeUtil.writeUnsignedVarInt(buffer, (int) motion.entityId);
             McpeUtil.writeVector3f(buffer, motion.motion);
         }
     }

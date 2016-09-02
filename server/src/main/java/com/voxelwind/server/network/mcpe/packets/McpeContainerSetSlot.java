@@ -16,16 +16,16 @@ public class McpeContainerSetSlot implements NetworkPackage {
     @Override
     public void decode(ByteBuf buffer) {
         windowId = buffer.readByte();
-        slot = McpeUtil.readVarInt(buffer);
-        unknown = McpeUtil.readVarInt(buffer);
+        slot = McpeUtil.readUnsignedVarInt(buffer);
+        unknown = McpeUtil.readUnsignedVarInt(buffer);
         stack = McpeUtil.readItemStack(buffer);
     }
 
     @Override
     public void encode(ByteBuf buffer) {
         buffer.writeByte(windowId);
-        McpeUtil.writeVarInt(buffer, slot);
-        McpeUtil.writeVarInt(buffer, unknown);
+        McpeUtil.writeUnsignedVarInt(buffer, slot);
+        McpeUtil.writeUnsignedVarInt(buffer, unknown);
         McpeUtil.writeItemStack(buffer, stack);
     }
 }

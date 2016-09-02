@@ -17,7 +17,7 @@ public class McpeContainerOpen implements NetworkPackage {
     public void decode(ByteBuf buffer) {
         windowId = buffer.readByte();
         type = buffer.readByte();
-        slotCount = McpeUtil.readVarInt(buffer);
+        slotCount = McpeUtil.readUnsignedVarInt(buffer);
         position = McpeUtil.readVector3i(buffer);
     }
 
@@ -25,7 +25,7 @@ public class McpeContainerOpen implements NetworkPackage {
     public void encode(ByteBuf buffer) {
         buffer.writeByte(windowId);
         buffer.writeByte(type);
-        McpeUtil.writeVarInt(buffer, slotCount);
+        McpeUtil.writeUnsignedVarInt(buffer, slotCount);
         McpeUtil.writeVector3i(buffer, position);
     }
 }

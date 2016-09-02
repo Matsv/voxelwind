@@ -22,7 +22,7 @@ public class McpeBatch implements NetworkPackage {
     public void decode(ByteBuf buffer) {
         ByteBuf decompressed = null;
         try {
-            int compressedSize = McpeUtil.readVarInt(buffer);
+            int compressedSize = McpeUtil.readUnsignedVarInt(buffer);
             decompressed = CompressionUtil.inflate(buffer.readSlice(compressedSize));
 
             // Now process the decompressed result.
@@ -82,7 +82,7 @@ public class McpeBatch implements NetworkPackage {
 
             // Use temporary buffer to compress everything (needed for varints)
             ByteBuf out = CompressionUtil.deflate(source);
-            McpeUtil.writeVarInt(buffer, out.readableBytes());
+            McpeUtil.writeUnsignedVarInt(buffer, out.readableBytes());
             buffer.writeBytes(out);
             out.release();
         } catch (DataFormatException e) {

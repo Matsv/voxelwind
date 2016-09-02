@@ -11,12 +11,12 @@ public class McpePlayStatus implements NetworkPackage {
 
     @Override
     public void decode(ByteBuf buffer) {
-        status = Status.values()[McpeUtil.readVarInt(buffer)];
+        status = Status.values()[McpeUtil.readUnsignedVarInt(buffer)];
     }
 
     @Override
     public void encode(ByteBuf buffer) {
-        McpeUtil.writeVarInt(buffer, status.ordinal());
+        McpeUtil.writeUnsignedVarInt(buffer, status.ordinal());
     }
 
     public enum Status {

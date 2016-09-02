@@ -12,13 +12,13 @@ public class McpeSetTime implements NetworkPackage {
 
     @Override
     public void decode(ByteBuf buffer) {
-        time = McpeUtil.readVarInt(buffer);
+        time = McpeUtil.readUnsignedVarInt(buffer);
         running = buffer.readBoolean();
     }
 
     @Override
     public void encode(ByteBuf buffer) {
-        McpeUtil.writeVarInt(buffer, (int) time);
+        McpeUtil.writeUnsignedVarInt(buffer, (int) time);
         buffer.writeBoolean(running);
     }
 }

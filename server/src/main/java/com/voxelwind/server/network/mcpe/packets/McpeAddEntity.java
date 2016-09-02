@@ -24,8 +24,8 @@ public class McpeAddEntity implements NetworkPackage {
 
     @Override
     public void decode(ByteBuf buffer) {
-        entityId = McpeUtil.readVarInt(buffer);
-        entityType = McpeUtil.readVarInt(buffer);
+        entityId = McpeUtil.readUnsignedVarInt(buffer);
+        entityType = McpeUtil.readUnsignedVarInt(buffer);
         position = McpeUtil.readVector3f(buffer);
         velocity = McpeUtil.readVector3f(buffer);
         yaw = buffer.readFloat();
@@ -36,8 +36,8 @@ public class McpeAddEntity implements NetworkPackage {
 
     @Override
     public void encode(ByteBuf buffer) {
-        McpeUtil.writeVarInt(buffer, (int) entityId);
-        McpeUtil.writeVarInt(buffer, entityType);
+        McpeUtil.writeUnsignedVarInt(buffer, (int) entityId);
+        McpeUtil.writeUnsignedVarInt(buffer, entityType);
         McpeUtil.writeVector3f(buffer, position);
         McpeUtil.writeVector3f(buffer, velocity);
         buffer.writeFloat(yaw);

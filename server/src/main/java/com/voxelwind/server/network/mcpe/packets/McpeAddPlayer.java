@@ -7,7 +7,6 @@ import com.voxelwind.server.game.item.VoxelwindItemStack;
 import com.voxelwind.server.network.mcpe.McpeUtil;
 import com.voxelwind.server.network.mcpe.util.metadata.MetadataDictionary;
 import com.voxelwind.server.network.NetworkPackage;
-import com.voxelwind.server.network.raknet.RakNetUtil;
 import io.netty.buffer.ByteBuf;
 import lombok.Data;
 
@@ -29,7 +28,7 @@ public class McpeAddPlayer implements NetworkPackage {
     public void decode(ByteBuf buffer) {
         uuid = McpeUtil.readUuid(buffer);
         username = McpeUtil.readVarIntString(buffer);
-        entityId = McpeUtil.readVarInt(buffer);
+        entityId = McpeUtil.readUnsignedVarInt(buffer);
         position = McpeUtil.readVector3f(buffer);
         velocity = McpeUtil.readVector3f(buffer);
         yaw = buffer.readFloat();
@@ -42,7 +41,7 @@ public class McpeAddPlayer implements NetworkPackage {
     public void encode(ByteBuf buffer) {
         McpeUtil.writeUuid(buffer, uuid);
         McpeUtil.writeVarIntString(buffer, username);
-        McpeUtil.writeVarInt(buffer, (int) entityId);
+        McpeUtil.writeUnsignedVarInt(buffer, (int) entityId);
         McpeUtil.writeVector3f(buffer, position);
         McpeUtil.writeVector3f(buffer, velocity);
         buffer.writeFloat(yaw);

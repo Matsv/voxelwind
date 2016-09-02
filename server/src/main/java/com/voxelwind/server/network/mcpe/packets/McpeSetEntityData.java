@@ -13,13 +13,13 @@ public class McpeSetEntityData implements NetworkPackage {
 
     @Override
     public void decode(ByteBuf buffer) {
-        entityId = McpeUtil.readVarInt(buffer);
+        entityId = McpeUtil.readUnsignedVarInt(buffer);
         metadata.putAll(MetadataDictionary.deserialize(buffer));
     }
 
     @Override
     public void encode(ByteBuf buffer) {
-        McpeUtil.writeVarInt(buffer, (int) entityId);
+        McpeUtil.writeUnsignedVarInt(buffer, (int) entityId);
         metadata.writeTo(buffer);
     }
 }

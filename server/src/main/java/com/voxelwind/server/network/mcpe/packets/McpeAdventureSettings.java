@@ -13,15 +13,15 @@ public class McpeAdventureSettings implements NetworkPackage {
 
     @Override
     public void decode(ByteBuf buffer) {
-        flags = McpeUtil.readVarInt(buffer);
-        playerPermissions = McpeUtil.readVarInt(buffer);
-        globalPermissions = McpeUtil.readVarInt(buffer);
+        flags = McpeUtil.readUnsignedVarInt(buffer);
+        playerPermissions = McpeUtil.readUnsignedVarInt(buffer);
+        globalPermissions = McpeUtil.readUnsignedVarInt(buffer);
     }
 
     @Override
     public void encode(ByteBuf buffer) {
-        McpeUtil.writeVarInt(buffer, flags);
-        McpeUtil.writeVarInt(buffer, playerPermissions);
-        McpeUtil.writeVarInt(buffer, globalPermissions);
+        McpeUtil.writeUnsignedVarInt(buffer, flags);
+        McpeUtil.writeUnsignedVarInt(buffer, playerPermissions);
+        McpeUtil.writeUnsignedVarInt(buffer, globalPermissions);
     }
 }

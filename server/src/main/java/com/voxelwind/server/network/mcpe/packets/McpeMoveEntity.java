@@ -15,7 +15,7 @@ public class McpeMoveEntity implements NetworkPackage {
 
     @Override
     public void decode(ByteBuf buffer) {
-        entityId = McpeUtil.readVarInt(buffer);
+        entityId = McpeUtil.readUnsignedVarInt(buffer);
         position = McpeUtil.readVector3f(buffer);
         rotation = McpeUtil.readRotation(buffer);
     }

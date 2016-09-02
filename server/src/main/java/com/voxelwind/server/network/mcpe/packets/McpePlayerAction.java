@@ -15,18 +15,18 @@ public class McpePlayerAction implements NetworkPackage {
 
     @Override
     public void decode(ByteBuf buffer) {
-        entityId = McpeUtil.readVarInt(buffer);
-        action = Action.values()[McpeUtil.readVarInt(buffer)];
+        entityId = McpeUtil.readUnsignedVarInt(buffer);
+        action = Action.values()[McpeUtil.readUnsignedVarInt(buffer)];
         position = McpeUtil.readVector3i(buffer);
-        face = McpeUtil.readVarInt(buffer);
+        face = McpeUtil.readUnsignedVarInt(buffer);
     }
 
     @Override
     public void encode(ByteBuf buffer) {
-        McpeUtil.writeVarInt(buffer, (int) entityId);
-        McpeUtil.writeVarInt(buffer, action.ordinal());
+        McpeUtil.writeUnsignedVarInt(buffer, (int) entityId);
+        McpeUtil.writeUnsignedVarInt(buffer, action.ordinal());
         McpeUtil.writeVector3i(buffer, position);
-        McpeUtil.writeVarInt(buffer, face);
+        McpeUtil.writeUnsignedVarInt(buffer, face);
     }
 
     public enum Action {

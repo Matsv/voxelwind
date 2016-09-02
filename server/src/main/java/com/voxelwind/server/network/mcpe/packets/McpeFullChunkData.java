@@ -18,20 +18,20 @@ public class McpeFullChunkData implements NetworkPackage {
 
     @Override
     public void decode(ByteBuf buffer) {
-        chunkX = McpeUtil.readVarInt(buffer);
-        chunkZ = McpeUtil.readVarInt(buffer);
+        chunkX = McpeUtil.readUnsignedVarInt(buffer);
+        chunkZ = McpeUtil.readUnsignedVarInt(buffer);
         order = buffer.readByte();
-        int length = McpeUtil.readVarInt(buffer);
+        int length = McpeUtil.readUnsignedVarInt(buffer);
         data = new byte[length];
         buffer.readBytes(data);
     }
 
     @Override
     public void encode(ByteBuf buffer) {
-        McpeUtil.writeVarInt(buffer, chunkX);
-        McpeUtil.writeVarInt(buffer, chunkZ);
+        McpeUtil.writeUnsignedVarInt(buffer, chunkX);
+        McpeUtil.writeUnsignedVarInt(buffer, chunkZ);
         buffer.writeByte(order);
-        McpeUtil.writeVarInt(buffer, data.length);
+        McpeUtil.writeUnsignedVarInt(buffer, data.length);
         buffer.writeBytes(data);
     }
 }

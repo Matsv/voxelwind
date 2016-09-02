@@ -30,17 +30,17 @@ public class McpeStartGame implements NetworkPackage {
 
     @Override
     public void encode(ByteBuf buffer) {
-        McpeUtil.writeVarInt(buffer, (int) entityId); //EntityUniqueID
-        McpeUtil.writeVarInt(buffer, (int) entityId); //EntityRuntimeID
+        McpeUtil.writeUnsignedVarInt(buffer, (int) entityId); //EntityUniqueID
+        McpeUtil.writeUnsignedVarInt(buffer, (int) entityId); //EntityRuntimeID
         McpeUtil.writeVector3f(buffer, spawnLocation);
         McpeUtil.writeVector3i(buffer, levelSpawnLocation);
-        McpeUtil.writeVarInt(buffer, seed);
-        McpeUtil.writeVarInt(buffer, dimension);
-        McpeUtil.writeVarInt(buffer, generator);
-        McpeUtil.writeVarInt(buffer, gamemode);
-        McpeUtil.writeVarInt(buffer, difficulty); //Difficulty
+        McpeUtil.writeUnsignedVarInt(buffer, seed);
+        McpeUtil.writeUnsignedVarInt(buffer, dimension);
+        McpeUtil.writeUnsignedVarInt(buffer, generator);
+        McpeUtil.writeUnsignedVarInt(buffer, gamemode);
+        McpeUtil.writeUnsignedVarInt(buffer, difficulty); //Difficulty
         buffer.writeBoolean(inCreative); //has been loaded in creative
-        McpeUtil.writeVarInt(buffer, -1); //dayCycleStopTime
+        McpeUtil.writeUnsignedVarInt(buffer, -1); //dayCycleStopTime
         buffer.writeBoolean(isEduMode); //edu mode
         buffer.writeFloat(rainLevel); //rain level
         buffer.writeFloat(lightningLevel); //lightning level

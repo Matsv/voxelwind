@@ -49,15 +49,15 @@ public class McpeUtil {
     }
 
     public static void writeVector3i(ByteBuf buf, Vector3i vector3i) {
-        writeVarInt(buf, vector3i.getX());
-        writeVarInt(buf, vector3i.getY());
-        writeVarInt(buf, vector3i.getZ());
+        writeUnsignedVarInt(buf, vector3i.getX());
+        writeUnsignedVarInt(buf, vector3i.getY());
+        writeUnsignedVarInt(buf, vector3i.getZ());
     }
 
     public static Vector3i readVector3i(ByteBuf buf) {
-        int x = readVarInt(buf);
-        int y = readVarInt(buf);
-        int z = readVarInt(buf);
+        int x = readUnsignedVarInt(buf);
+        int y = readUnsignedVarInt(buf);
+        int z = readUnsignedVarInt(buf);
         return new Vector3i(x, y, z);
     }
 
@@ -97,7 +97,7 @@ public class McpeUtil {
 
     public static Collection<Attribute> readAttributes(ByteBuf buf) {
         List<Attribute> attributes = new ArrayList<>();
-        int size = readVarInt(buf);
+        int size = readUnsignedVarInt(buf);
 
         for (int i = 0; i < size; i++) {
             float min = buf.readFloat();
@@ -112,7 +112,7 @@ public class McpeUtil {
     }
 
     public static void writeAttributes(ByteBuf buf, Collection<Attribute> attributeList) {
-        McpeUtil.writeVarInt(buf, attributeList.size());
+        McpeUtil.writeUnsignedVarInt(buf, attributeList.size());
         for (Attribute attribute : attributeList) {
             buf.writeFloat(attribute.getMinimumValue());
             buf.writeFloat(attribute.getMaximumValue());
@@ -143,7 +143,7 @@ public class McpeUtil {
 
     public static TranslatedMessage readTranslatedMessage(ByteBuf buf) {
         String message = readVarIntString(buf);
-        int ln = readVarInt(buf);
+        int ln = readUnsignedVarInt(buf);
         List<String> replacements = new ArrayList<>();
         for (int i = 0; i < ln; i++) {
             replacements.add(readVarIntString(buf));
@@ -153,7 +153,7 @@ public class McpeUtil {
 
     public static void writeTranslatedMessage(ByteBuf buf, TranslatedMessage message) {
         writeVarIntString(buf, message.getName());
-        writeVarInt(buf, message.getReplacements().size());
+        writeUnsignedVarInt(buf, message.getReplacements().size());
         for (String s : message.getReplacements()) {
             writeVarIntString(buf, s);
         }
@@ -168,7 +168,7 @@ public class McpeUtil {
         int count = buf.readByte();
         short damage = buf.readShort();
 
-        int nbtSize = readVarInt(buf);
+        int nbtSize = readUnsignedVarInt(buf);
 
         ItemType type = ItemTypes.forId(id);
         VoxelwindItemStack stack = new VoxelwindItemStack(type, count, type.createDataFor(damage).orElse(null));
@@ -208,14 +208,14 @@ public class McpeUtil {
             }
 
             // Write NBT size.
-            writeVarInt(buf, nbtBuffer.size());
+            writeUnsignedVarInt(buf, nbtBuffer.size());
             try {
                 nbtBuffer.writeTo(new ByteBufOutputStream(buf));
             } catch (IOException e) {
                 throw new AssertionError(e); // Can't ever happen
             }
         } else {
-            writeVarInt(buf, 0);
+            writeUnsignedVarInt(buf, 0);
         }
     }
 
@@ -228,7 +228,7 @@ public class McpeUtil {
         buf.writeLong(uuid.getLeastSignificantBits());
     }
 
-    public static int readVarInt(ByteBuf in) {
+    public static int readUnsignedVarInt(ByteBuf in) {
         int i = 0;
         int j = 0;
         while (true) {
@@ -240,7 +240,7 @@ public class McpeUtil {
         return i;
     }
 
-    public static void writeVarInt(ByteBuf out, int paramInt) {
+    public static void writeUnsignedVarInt(ByteBuf out, int paramInt) {
         while (true) {
             if ((paramInt & 0xFFFFFF80) == 0) {
                 out.writeByte(paramInt);
@@ -252,13 +252,46 @@ public class McpeUtil {
         }
     }
 
+    public static int readSignedVarInt(ByteBuf in) {
+        int raw = readUnsignedVarInt(in);
+        return (((raw << 31) >> 31) ^ raw) >> 1;
+    }
+
+    public static void writeSignedVarInt(ByteBuf out, int value) {
+        writeUnsignedVarInt(out, (value << 1) ^ (value >> 31));
+    }
+
+    public static long readUnsignedVarLong(ByteBuf in) {
+        long i = 0;
+        int j = 0;
+        while (true) {
+            int k = in.readByte();
+            i |= (k & 0x7F) << j++ * 7;
+            if (j > 9) throw new RuntimeException("VarInt too big");
+            if ((k & 0x80) != 128) break;
+        }
+        return i;
+    }
+
+    public static void writeUnsignedVarLong(ByteBuf out, long paramInt) {
+        while (true) {
+            if ((paramInt & 0xFFFFFFFFFFFFFF80L) == 0) {
+                out.writeByte((int) paramInt);
+                return;
+            }
+
+            out.writeByte((int) (paramInt & 0x7F | 0x80));
+            paramInt >>>= 7;
+        }
+    }
+
     public static String readVarIntString(ByteBuf buf) {
-        int length = readVarInt(buf);
+        int length = readUnsignedVarInt(buf);
         return buf.readSlice(length).toString(StandardCharsets.UTF_8);
     }
 
     public static void writeVarIntString(ByteBuf buf, String string) {
-        writeVarInt(buf, string.length());
+        writeUnsignedVarInt(buf, string.length());
         ByteBufUtil.writeUtf8(buf, string);
     }
 }

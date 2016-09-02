@@ -11,11 +11,11 @@ public class McpeSetPlayerGameMode implements NetworkPackage {
 
     @Override
     public void decode(ByteBuf buffer) {
-        gamemode = McpeUtil.readVarInt(buffer);
+        gamemode = McpeUtil.readUnsignedVarInt(buffer);
     }
 
     @Override
     public void encode(ByteBuf buffer) {
-        McpeUtil.writeVarInt(buffer, gamemode);
+        McpeUtil.writeUnsignedVarInt(buffer, gamemode);
     }
 }
