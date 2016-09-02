@@ -75,24 +75,11 @@ public class McpeUtil {
     }
 
     public static Rotation readRotation(ByteBuf buf) {
-        byte pitchByte = buf.readByte();
-        byte yawByte = buf.readByte();
-        byte headYawByte = buf.readByte();
-        return new Rotation(rotationByteToAngle(pitchByte), rotationByteToAngle(yawByte), rotationByteToAngle(headYawByte));
+        return Rotation.fromVector3f(readVector3f(buf));
     }
 
     public static void writeRotation(ByteBuf buf, Rotation rotation) {
-        buf.writeByte(rotationAngleToByte(rotation.getPitch()));
-        buf.writeByte(rotationAngleToByte(rotation.getYaw()));
-        buf.writeByte(rotationAngleToByte(rotation.getHeadYaw()));
-    }
-
-    private static byte rotationAngleToByte(float angle) {
-        return (byte) Math.ceil(angle / 360 * 255);
-    }
-
-    private static float rotationByteToAngle(byte angle) {
-        return angle / 255f * 360f;
+        writeVector3f(buf, rotation.toVector3f());
     }
 
     public static Collection<Attribute> readAttributes(ByteBuf buf) {

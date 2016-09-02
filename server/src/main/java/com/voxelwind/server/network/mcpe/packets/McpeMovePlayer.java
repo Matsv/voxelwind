@@ -21,6 +21,7 @@ public class McpeMovePlayer implements NetworkPackage {
         position = McpeUtil.readVector3f(buffer);
         rotation = McpeUtil.readRotation(buffer);
         mode = buffer.readBoolean();
+        // TODO: Byte here?!?
         onGround = buffer.readBoolean();
     }
 

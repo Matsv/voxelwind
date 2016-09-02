@@ -184,6 +184,7 @@ public class BaseEntity implements Entity {
 
         McpeAddEntity packet = new McpeAddEntity();
         packet.setEntityId(getEntityId());
+        packet.setRuntimeId(getEntityId());
         packet.setEntityType(data.getType());
         packet.setPosition(getGamePosition());
         packet.setVelocity(getMotion());

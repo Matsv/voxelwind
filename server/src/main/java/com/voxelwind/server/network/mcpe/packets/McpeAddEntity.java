@@ -14,6 +14,7 @@ import java.util.Collection;
 @Data
 public class McpeAddEntity implements NetworkPackage {
     private long entityId;
+    private long runtimeId;
     private int entityType;
     private Vector3f position;
     private Vector3f velocity;
@@ -25,6 +26,7 @@ public class McpeAddEntity implements NetworkPackage {
     @Override
     public void decode(ByteBuf buffer) {
         entityId = McpeUtil.readUnsignedVarInt(buffer);
+        runtimeId = McpeUtil.readUnsignedVarInt(buffer);
         entityType = McpeUtil.readUnsignedVarInt(buffer);
         position = McpeUtil.readVector3f(buffer);
         velocity = McpeUtil.readVector3f(buffer);
@@ -32,11 +34,13 @@ public class McpeAddEntity implements NetworkPackage {
         pitch = buffer.readFloat();
         attributes.addAll(McpeUtil.readAttributes(buffer));
         metadata.putAll(MetadataDictionary.deserialize(buffer));
+        // TODO: Entity Links
     }
 
     @Override
     public void encode(ByteBuf buffer) {
         McpeUtil.writeUnsignedVarInt(buffer, (int) entityId);
+        McpeUtil.writeUnsignedVarInt(buffer, (int) runtimeId);
         McpeUtil.writeUnsignedVarInt(buffer, entityType);
         McpeUtil.writeVector3f(buffer, position);
         McpeUtil.writeVector3f(buffer, velocity);
@@ -44,5 +48,7 @@ public class McpeAddEntity implements NetworkPackage {
         buffer.writeFloat(pitch);
         McpeUtil.writeAttributes(buffer, attributes);
         metadata.writeTo(buffer);
+        // TODO: Entity Links
+        McpeUtil.writeUnsignedVarInt(buffer, 0);
     }
 }
