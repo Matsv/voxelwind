@@ -33,12 +33,12 @@ public class McpeStartGame implements NetworkPackage {
         McpeUtil.writeUnsignedVarInt(buffer, (int) entityId); //EntityUniqueID
         McpeUtil.writeUnsignedVarInt(buffer, (int) entityId); //EntityRuntimeID
         McpeUtil.writeVector3f(buffer, spawnLocation);
-        McpeUtil.writeVector3i(buffer, levelSpawnLocation);
         McpeUtil.writeUnsignedVarInt(buffer, seed);
         McpeUtil.writeUnsignedVarInt(buffer, dimension);
         McpeUtil.writeUnsignedVarInt(buffer, generator);
         McpeUtil.writeUnsignedVarInt(buffer, gamemode);
         McpeUtil.writeUnsignedVarInt(buffer, difficulty); //Difficulty
+        McpeUtil.writeVector3i(buffer, levelSpawnLocation);
         buffer.writeBoolean(inCreative); //has been loaded in creative
         McpeUtil.writeUnsignedVarInt(buffer, -1); //dayCycleStopTime
         buffer.writeBoolean(isEduMode); //edu mode
