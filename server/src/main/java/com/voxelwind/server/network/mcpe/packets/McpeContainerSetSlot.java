@@ -10,22 +10,22 @@ import lombok.Data;
 public class McpeContainerSetSlot implements NetworkPackage {
     private byte windowId;
     private int slot;
-    private int unknown;
+    private int hotbarSlot;
     private ItemStack stack;
 
     @Override
     public void decode(ByteBuf buffer) {
         windowId = buffer.readByte();
-        slot = McpeUtil.readUnsignedVarInt(buffer);
-        unknown = McpeUtil.readUnsignedVarInt(buffer);
+        slot = McpeUtil.readSignedVarInt(buffer);
+        hotbarSlot = McpeUtil.readSignedVarInt(buffer);
         stack = McpeUtil.readItemStack(buffer);
     }
 
     @Override
     public void encode(ByteBuf buffer) {
         buffer.writeByte(windowId);
-        McpeUtil.writeUnsignedVarInt(buffer, slot);
-        McpeUtil.writeUnsignedVarInt(buffer, unknown);
+        McpeUtil.writeSignedVarInt(buffer, slot);
+        McpeUtil.writeSignedVarInt(buffer, hotbarSlot);
         McpeUtil.writeItemStack(buffer, stack);
     }
 }

@@ -16,11 +16,7 @@ import com.voxelwind.server.game.item.VoxelwindItemStack;
 import com.voxelwind.server.game.level.util.Attribute;
 import com.voxelwind.server.network.raknet.RakNetUtil;
 import com.voxelwind.api.util.Rotation;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufInputStream;
-import io.netty.buffer.ByteBufOutputStream;
-import io.netty.buffer.ByteBufUtil;
-import org.apache.commons.io.output.ByteArrayOutputStream;
+import io.netty.buffer.*;
 
 import java.io.IOException;
 import java.nio.ByteOrder;
@@ -109,8 +105,8 @@ public class McpeUtil {
     }
 
     public static Skin readSkin(ByteBuf buf) {
-        String type = RakNetUtil.readString(buf);
-        short length = buf.readShort();
+        String type = readVarIntString(buf);
+        int length = readUnsignedVarInt(buf);
         if (length == 64*32*4 || length == 64*64*4) {
             byte[] in = new byte[length];
             buf.readBytes(in);
@@ -123,8 +119,8 @@ public class McpeUtil {
 
     public static void writeSkin(ByteBuf buf, Skin skin) {
         byte[] texture = skin.getTexture();
-        RakNetUtil.writeString(buf, skin.getType());
-        buf.writeShort(texture.length);
+        writeVarIntString(buf, skin.getType());
+        writeUnsignedVarInt(buf, texture.length);
         buf.writeBytes(texture);
     }
 
@@ -147,7 +143,7 @@ public class McpeUtil {
     }
 
     public static ItemStack readItemStack(ByteBuf buf) {
-        short id = buf.readShort();
+        int id = readSignedVarInt(buf);
         if (id == 0) {
             return new VoxelwindItemStack(BlockTypes.AIR, 1, null);
         }
@@ -171,7 +167,7 @@ public class McpeUtil {
     }
 
     public static void writeItemStack(ByteBuf buf, ItemStack stack) {
-        buf.writeShort(stack.getItemType().getId());
+        writeSignedVarInt(buf, stack.getItemType().getId());
         if (stack.getItemType() == BlockTypes.AIR) {
             return;
         }
@@ -186,20 +182,20 @@ public class McpeUtil {
 
         // Write a stack here
         if (stack instanceof VoxelwindItemStack) {
-            ByteArrayOutputStream nbtBuffer = new ByteArrayOutputStream();
-            try (NBTOutputStream stream = new NBTOutputStream(nbtBuffer, false, ByteOrder.LITTLE_ENDIAN)) {
-                ((VoxelwindItemStack) stack).writeNbt(stream);
-            } catch (IOException e) {
-                // This shouldn't happen (as this is backed by a Netty ByteBuf), but okay...
-                throw new IllegalStateException("Unable to save NBT data", e);
-            }
-
-            // Write NBT size.
-            writeUnsignedVarInt(buf, nbtBuffer.size());
+            ByteBuf nbtBuffer = PooledByteBufAllocator.DEFAULT.directBuffer();
             try {
-                nbtBuffer.writeTo(new ByteBufOutputStream(buf));
+                try (NBTOutputStream stream = new NBTOutputStream(new ByteBufOutputStream(nbtBuffer), false, ByteOrder.LITTLE_ENDIAN)) {
+                    ((VoxelwindItemStack) stack).writeNbt(stream);
+                }
+
+                // Write NBT size.
+                writeUnsignedVarInt(buf, nbtBuffer.readableBytes());
+                buf.writeBytes(nbtBuffer);
             } catch (IOException e) {
-                throw new AssertionError(e); // Can't ever happen
+                // This shouldn't happen (as this is backed by a byte buffer), but okay...
+                throw new IllegalStateException("Unable to save NBT data", e);
+            } finally {
+                nbtBuffer.release();
             }
         } else {
             writeUnsignedVarInt(buf, 0);
