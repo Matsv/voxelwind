@@ -12,13 +12,13 @@ public class McpeEntityEvent implements NetworkPackage {
 
     @Override
     public void decode(ByteBuf buffer) {
-        entityId = McpeUtil.readUnsignedVarInt(buffer);
+        entityId = McpeUtil.readSignedVarInt(buffer);
         event = buffer.readByte();
     }
 
     @Override
     public void encode(ByteBuf buffer) {
-        McpeUtil.writeUnsignedVarInt(buffer, (int) entityId);
+        McpeUtil.writeSignedVarInt(buffer, (int) entityId);
         buffer.writeByte(event);
     }
 }

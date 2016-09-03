@@ -9,20 +9,19 @@ import lombok.Data;
 @Data
 public class McpeUpdateBlock implements NetworkPackage {
     private Vector3i position;
-    private byte blockId;
-    private byte metadata;
+    private int blockId;
+    private int flags;
+    private int metadata;
 
     @Override
     public void decode(ByteBuf buffer) {
-        position = McpeUtil.readVector3i(buffer);
-        blockId = buffer.readByte();
-        metadata = buffer.readByte();
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void encode(ByteBuf buffer) {
         McpeUtil.writeVector3i(buffer, position);
-        buffer.writeByte(blockId);
-        buffer.writeByte(metadata);
+        McpeUtil.writeSignedVarInt(buffer, blockId);
+        McpeUtil.writeSignedVarInt(buffer, (flags << 4) | metadata);
     }
 }

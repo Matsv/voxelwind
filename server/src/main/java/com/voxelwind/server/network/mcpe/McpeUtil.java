@@ -45,15 +45,15 @@ public class McpeUtil {
     }
 
     public static void writeVector3i(ByteBuf buf, Vector3i vector3i) {
-        writeUnsignedVarInt(buf, vector3i.getX());
-        writeUnsignedVarInt(buf, vector3i.getY());
-        writeUnsignedVarInt(buf, vector3i.getZ());
+        writeSignedVarInt(buf, vector3i.getX());
+        writeSignedVarInt(buf, vector3i.getY());
+        writeSignedVarInt(buf, vector3i.getZ());
     }
 
     public static Vector3i readVector3i(ByteBuf buf) {
-        int x = readUnsignedVarInt(buf);
-        int y = readUnsignedVarInt(buf);
-        int z = readUnsignedVarInt(buf);
+        int x = readSignedVarInt(buf);
+        int y = readSignedVarInt(buf);
+        int z = readSignedVarInt(buf);
         return new Vector3i(x, y, z);
     }
 

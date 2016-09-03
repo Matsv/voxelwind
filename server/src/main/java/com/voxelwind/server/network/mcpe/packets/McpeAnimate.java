@@ -1,6 +1,7 @@
 package com.voxelwind.server.network.mcpe.packets;
 
 import com.voxelwind.server.network.NetworkPackage;
+import com.voxelwind.server.network.mcpe.McpeUtil;
 import io.netty.buffer.ByteBuf;
 import lombok.Data;
 
@@ -8,16 +9,19 @@ import lombok.Data;
 public class McpeAnimate implements NetworkPackage {
     private byte action;
     private long entityId;
+    private float unknown;
 
     @Override
     public void decode(ByteBuf buffer) {
         action = buffer.readByte();
-        entityId = buffer.readLong();
+        entityId = McpeUtil.readSignedVarInt(buffer);
+        unknown = buffer.readFloat();
     }
 
     @Override
     public void encode(ByteBuf buffer) {
         buffer.writeByte(action);
-        buffer.writeLong(entityId);
+        McpeUtil.writeSignedVarInt(buffer, (int) entityId);
+        buffer.writeFloat(unknown);
     }
 }

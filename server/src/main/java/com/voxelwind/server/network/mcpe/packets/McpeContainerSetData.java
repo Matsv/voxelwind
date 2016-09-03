@@ -14,14 +14,14 @@ public class McpeContainerSetData implements NetworkPackage {
     @Override
     public void decode(ByteBuf buffer) {
         windowId = buffer.readByte();
-        property = McpeUtil.readUnsignedVarInt(buffer);
-        value = McpeUtil.readUnsignedVarInt(buffer);
+        property = McpeUtil.readSignedVarInt(buffer);
+        value = McpeUtil.readSignedVarInt(buffer);
     }
 
     @Override
     public void encode(ByteBuf buffer) {
         buffer.writeByte(windowId);
-        McpeUtil.writeUnsignedVarInt(buffer, property);
-        McpeUtil.writeUnsignedVarInt(buffer, value);
+        McpeUtil.writeSignedVarInt(buffer, property);
+        McpeUtil.writeSignedVarInt(buffer, value);
     }
 }
